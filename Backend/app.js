@@ -3,6 +3,12 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
+import { errorMiddleware } from "./middleware/error.js";
+
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import { options } from "./docs/swagger.js";
+import routes from "./routes/index.js";
 dotenv.config({ path: "./config/config.env" });
 
 const app = express();
@@ -25,5 +31,10 @@ app.use(
     tempFileDir: "/tmp/",
   })
 );
+
+app.use(routes);
+const specs = swaggerJSDoc(options);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use(errorMiddleware);
 
 export default app;
