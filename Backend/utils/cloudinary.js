@@ -13,9 +13,7 @@ cloudinary.config({
 const uploadImageCloudinary = async (localpath) => {
   try {
     if (!localpath) return null;
-    const upload = await cloudinary.uploader.upload(localpath, {
-      resouce_type: "image",
-    });
+    const upload = await cloudinary.uploader.upload(localpath);
     console.log("Image uploaded successfully", upload.url);
     return upload;
   } catch (error) {
