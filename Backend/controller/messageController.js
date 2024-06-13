@@ -1,4 +1,4 @@
-import { catchAsyncErrors } from "../middleware/catchAsync.js";
+import catchAsyncErrors from "../middleware/catchAsync.js";
 import {
   DeleteSendMessage,
   FindAllSenderMesage,
