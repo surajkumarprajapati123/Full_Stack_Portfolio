@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password Required!"],
       minLength: [8, "Password Must Contain At Least 8 Characters!"],
-      select: false,
+      // select: false,
     },
     avatar: {
       public_id: {
@@ -83,15 +83,22 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  const matchpassword = await bcrypt.compare(enteredPassword, this.password);
+  // console.log("mathpassword form model ", matchpassword);
+  return matchpassword;
 };
 
-userSchema.methods.generateJsonWebToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRES,
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRES,
   });
 };
-
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign({ id: this._id }, process.env.REFRESH_TOKEN_SECRET_KEY, {
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRES,
+  });
+};
+console.log("process.env.JWT_SECRET_KEY", process.env.JWT_SECRET_KEY);
 //Generating Reset Password Token
 userSchema.methods.getResetPasswordToken = function () {
   //Generating Token
