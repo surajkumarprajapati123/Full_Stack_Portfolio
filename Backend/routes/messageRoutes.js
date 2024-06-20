@@ -77,7 +77,7 @@ export default router;
 
 /**
  * @swagger
- * /update:
+ * /messages/update:
  *   put:
  *     summary: Update a sender message
  *     description: |
@@ -121,7 +121,7 @@ export default router;
 
 /**
  * @swagger
- * /delete:
+ * /messages/delete:
  *   delete:
  *     summary: Delete a sender message
  *     description: |
