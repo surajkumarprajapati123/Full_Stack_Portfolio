@@ -24,4 +24,4 @@ const timelineSchema = new mongoose.Schema(
   }
 );
 
-export const Timeline = mongoose.model("Timeline", timelineSchema);
+export const TimelineModel = mongoose.model("Timeline", timelineSchema);
