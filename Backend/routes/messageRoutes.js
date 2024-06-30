@@ -1,17 +1,13 @@
 import express from "express";
-import {
-  CreateSenderMessage,
-  DeleteSendMessageC,
-  FindAllMessage,
-  UpdateSenderMessageC,
-} from "../controller/messageController.js";
+import messageController from "../controller/messageController.js";
+
 
 const router = express.Router();
 
-router.route("/create").post(CreateSenderMessage);
-router.route("/update").put(UpdateSenderMessageC);
-router.route("/delete").delete(DeleteSendMessageC);
-router.route("/all").get(FindAllMessage);
+router.route("/create").post(messageController.CreateSenderMessage);
+router.route("/update/:id").put(messageController.UpdateSenderMessageC);
+router.route("/delete/:id").delete(messageController.DeleteSendMessageC);
+router.route("/all").get(messageController.FindAllMessage);
 
 export default router;
 /**
@@ -20,7 +16,7 @@ export default router;
  *   - name: Message
  *     description: Operations related to messages
  * paths:
- *   /message/create:
+ *   /api/v1/message/create:
  *     post:
  *       summary: Create a sender message
  *       tags: [Message]
@@ -58,7 +54,7 @@ export default router;
 
 /**
  * @swagger
- * /messages/all:
+ * /api/v1/message/all:
  *   get:
  *     summary: Retrieve all messages
  *     description: |
@@ -77,14 +73,23 @@ export default router;
 
 /**
  * @swagger
- * /messages/update:
+ * /api/v1/message/update/{id}:
  *   put:
  *     summary: Update a sender message
  *     description: |
  *       Update a sender message. Requires authentication.
- *     tags: [Message]
+ *     tags: 
+ *       - Message
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: The ID of the message to update
+ *           example: 123456789
  *     requestBody:
  *       required: true
  *       content:
@@ -92,10 +97,6 @@ export default router;
  *           schema:
  *             type: object
  *             properties:
- *               messageId:
- *                 type: string
- *                 description: The ID of the message to update
- *                 example: 123456789
  *               senderName:
  *                 type: string
  *                 description: The updated name of the sender
@@ -119,27 +120,26 @@ export default router;
  *         description: Internal server error
  */
 
+
 /**
  * @swagger
- * /messages/delete:
+ * /api/v1/message/delete/{id}:
  *   delete:
  *     summary: Delete a sender message
  *     description: |
- *       Delete a sender message. Requires authentication.
- *     tags: [Message]
+ *       Delete a sender message by ID. Requires authentication.
+ *     tags: 
+ *       - Message
  *     security:
  *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               messageId:
- *                 type: string
- *                 description: The ID of the message to delete
- *                 example: 123456789
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: The ID of the message to delete
+ *           example: 123456789
  *     responses:
  *       '200':
  *         description: Message deleted successfully
@@ -148,3 +148,4 @@ export default router;
  *       '500':
  *         description: Internal server error
  */
+

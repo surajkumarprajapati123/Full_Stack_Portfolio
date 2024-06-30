@@ -14,7 +14,7 @@ router.route("/forgot-link").post(userController.ForgatePassword);
 router.route("/verify/:token").post(userController.VerifyToken);
 router
   .route("/change-password")
-  .post(isAuthenticated, userController.changePassword);
+  .put(isAuthenticated, userController.changePassword);
 
 export default router;
 
@@ -524,12 +524,16 @@ export default router;
  *     security:
  *      - bearerAuth: []
  *     requestBody:
- *       description: Old and new password data
+ *       description: Old, new, and confirmation password data
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - oldPassword
+ *               - newPassword
+ *               - confirmPassword
  *             properties:
  *               oldPassword:
  *                 type: string
@@ -541,6 +545,11 @@ export default router;
  *                 format: password
  *                 example: "newpassword123"
  *                 description: The user's new password
+ *               confirmPassword:
+ *                 type: string
+ *                 format: password
+ *                 example: "newpassword123"
+ *                 description: Confirmation of the user's new password
  *     responses:
  *       200:
  *         description: Password changed successfully
@@ -553,7 +562,7 @@ export default router;
  *                   type: string
  *                   example: "Password changed successfully"
  *       400:
- *         description: Invalid input
+ *         description: Invalid input or passwords do not match
  *         content:
  *           application/json:
  *             schema:
@@ -561,7 +570,7 @@ export default router;
  *               properties:
  *                 message:
  *                   type: string
- *                   example: "Invalid input data"
+ *                   example: "Invalid input data or passwords do not match"
  *       401:
  *         description: Unauthorized or old password not matched
  *         content:

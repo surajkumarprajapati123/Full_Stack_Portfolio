@@ -11,7 +11,7 @@ export const SendMessage = async (messageData) => {
     message,
     subject,
   });
-  console.log("Send mesage is created", msg);
+  // console.log("Send mesage is created", msg);
   return msg;
 };
 
@@ -20,7 +20,7 @@ export const FindAllSenderMesage = async () => {
   if (!msg) {
     throw new ErrorHandler("message data is not fetcehd", 400);
   }
-  console.log("all data", msg);
+  // console.log("all data", msg);
   return msg;
 };
 
@@ -34,7 +34,7 @@ export const UpdateSenderMessage = async (userid, messagedate) => {
   msg = await MessageModel.findByIdAndUpdate({ _id: userid }, messagedate, {
     new: true,
   });
-  console.log("Updated message", msg);
+  // console.log("Updated message", msg);
 
   return msg;
 };
@@ -44,7 +44,14 @@ export const DeleteSendMessage = async (userid) => {
     throw new ErrorHandler("Message not found", 400);
   }
   msg = await MessageModel.findByIdAndDelete({ _id: userid }, { new: true });
-  console.log("Delete message", msg);
+  // console.log("Delete message", msg);
 
   return msg;
 };
+
+export default {
+  SendMessage,
+  DeleteSendMessage,
+  UpdateSenderMessage,
+  FindAllSenderMesage
+}

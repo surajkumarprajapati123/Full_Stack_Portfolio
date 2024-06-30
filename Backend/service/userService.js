@@ -77,7 +77,7 @@ const CreateUser = async (req, userdate) => {
       url: UploadResumeOnClodinary.secure_url,
     },
   });
-  console.log("user is create is ", user);
+  // console.log("user is create is ", user);
   return user;
 };
 
@@ -126,8 +126,12 @@ const login = async (res, userdate) => {
   res.cookie("accessToken", AccessToken, option);
   res.cookie("refreshToken", RefreshToken, option);
   // console.log("user is ", user);
-
-  return { accessToken: AccessToken, refreshToken: RefreshToken };
+   const userobj = {
+       accessToken:AccessToken,
+       refreshToken:RefreshToken,
+       user:user
+   }
+  return userobj
 };
 
 const logout = async (req, res) => {
@@ -230,7 +234,7 @@ const UpdateProfile = async (req, userId, userData) => {
     });
 
     // Return the updated user
-    console.log("updated user ", updatedUser);
+    // console.log("updated user ", updatedUser);
     return updatedUser;
   } catch (error) {
     console.error("Error updating profile:", error);
@@ -294,7 +298,7 @@ const VerifyToken = async (passwordData, token) => {
     // Extract password from passwordData
     const { password } = passwordData;
     if (!password) {
-      throw new ErrorHandler("Enter the Password", 401);
+      throw new ErrorHandler("Please enter the password", 401);
     }
 
     // Find token in database
@@ -303,51 +307,55 @@ const VerifyToken = async (passwordData, token) => {
       throw new ErrorHandler("Token is invalid", 401);
     }
 
-    // Log current time and decoded token time
-    // console.log("Current time: ", new Date());
-    // console.log("Token expiry time: ", new Date(decodedToken.expires));
-
     // Check if token has expired
     if (Date.now() > decodedToken.expires) {
       decodedToken.blacklisted = true;
       await decodedToken.save();
-      throw new ErrorHandler(
-        "Token has expired, please request a new one",
-        401
-      );
+      throw new ErrorHandler("Token has expired, please request a new one", 401);
     }
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Update user's password
-    const userId = decodedToken.user;
-    const user = await UserModel.findByIdAndUpdate(userId, {
-      password: hashedPassword,
-    });
+    const userId = decodedToken.userid;
+    // console.log("userid",userId)
+    const user = await UserModel.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
 
     // Check if user exists
+    // console.log(user)
     if (!user) {
       throw new ErrorHandler("User not found", 404);
     }
+
+    // console.log("Changed password from VerifyToken:", user);
 
     // Return the updated user
     return user;
   } catch (error) {
     // Handle errors
-
-    console.log("error is ", error); // Re-throw other errors
+    console.error("Error in VerifyToken function:", error);
+    throw error; // Re-throw other errors
   }
 };
 
-const changePassword = async (userId, oldPassword, newPassword) => {
+
+const changePassword = async (userId, userdate) => {
   try {
+    console.log("working")
+    const { oldPassword, newPassword, confirmPassword } = userdate;
+
     // Validate the input parameters
-    if (!oldPassword || !newPassword) {
+    if (!oldPassword || !newPassword || !confirmPassword) {
       throw new ErrorHandler(
-        "Please enter both the old password and the new password",
+        "Please enter both the old password and the new password confirmPassword",
         401
       );
+    }
+
+    // Validate if newPassword and confirmPassword match
+    if (newPassword !== confirmPassword) {
+      throw new ErrorHandler("New password and confirm password do not match", 401);
     }
 
     // Find the user by their ID
@@ -367,6 +375,8 @@ const changePassword = async (userId, oldPassword, newPassword) => {
 
     // Update the user's password
     user.password = hashedPassword;
+
+    // Save the updated user object
     await user.save();
 
     return { message: "Password changed successfully" };
@@ -375,6 +385,7 @@ const changePassword = async (userId, oldPassword, newPassword) => {
     throw error;
   }
 };
+
 
 export default {
   CreateUser,

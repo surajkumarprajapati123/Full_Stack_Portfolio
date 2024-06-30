@@ -35,7 +35,7 @@ const ForgatePassword = catchAsyncErrors(async (req, res) => {
 });
 const VerifyToken = catchAsyncErrors(async (req, res) => {
   const user = await UserService.VerifyToken(
-    req.body.password,
+    req.body,
     req.params.token
   );
   ApiResponse(res, 200, "Password change Successfully", user);
@@ -44,8 +44,7 @@ const VerifyToken = catchAsyncErrors(async (req, res) => {
 const changePassword = catchAsyncErrors(async (req, res) => {
   const user = await UserService.changePassword(
     req.user._id,
-    req.body.oldPassword,
-    req.body.newPassword
+    req.body
   );
   ApiResponse(res, 200, "Password change Successfully", user);
 });
